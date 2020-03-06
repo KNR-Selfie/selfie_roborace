@@ -9,7 +9,6 @@
 #include <selfie_stm32_bridge/usb.hpp>
 #include <selfie_stm32_bridge/bridge.h>
 #include <sstream>
-#include <selfie_scheduler/scheduler_enums.h>
 #include <selfie_stm32_bridge/StmBridgeConfig.h>
 #include <dynamic_reconfigure/server.h>
 
@@ -22,7 +21,6 @@ Pub_messages pub_messages;
 Sub_messages sub_messages;
 
 USB_STM Usb;
-int steering_mode = ACKERMANN;
 std_msgs::Empty empty_msg;
 
 float ackermann_offset_front;
@@ -87,17 +85,8 @@ int main(int argc, char **argv)
 
 void ackermanCallback(const ackermann_msgs::AckermannDriveStamped::ConstPtr& msg)
 {   
-    if(steering_mode == ACKERMANN)
-    {   
-        sub_messages.ackerman.steering_angle_front = -msg->drive.steering_angle + ackermann_offset_front;
-        sub_messages.ackerman.steering_angle_back = msg->drive.steering_angle + ackermann_offset_back;
-    }
-    else if(steering_mode == FRONT_AXIS)
-    {
-        sub_messages.ackerman.steering_angle_front = -msg->drive.steering_angle + front_axis_offset;
-        sub_messages.ackerman.steering_angle_back = back_axis_offset;
-    }
-        
+    sub_messages.ackerman.steering_angle_front = -msg->drive.steering_angle + ackermann_offset_front;
+    sub_messages.ackerman.steering_angle_back = msg->drive.steering_angle + ackermann_offset_back;
     sub_messages.ackerman.speed = msg->drive.speed;
     sub_messages.ackerman.acceleration = msg->drive.acceleration;
     sub_messages.ackerman.jerk = msg->drive.jerk;

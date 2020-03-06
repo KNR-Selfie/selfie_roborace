@@ -14,7 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   roscpp
   ackermann_msgs
-  selfie_scheduler
   dynamic_reconfigure
 )
 
