@@ -1,0 +1,6 @@
+<launch>
+<include file="$(find selfie_launch)/launch/subsystems/hardware.launch" />
+  <include file="$(find selfie_launch)/launch/subsystems/transforms.launch" />
+
+  <node pkg="selfie_odometry" type="selfie_odometry" name="selfie_odometry" />
+</launch>
