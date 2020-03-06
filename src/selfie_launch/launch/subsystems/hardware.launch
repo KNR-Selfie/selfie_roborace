@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find selfie_launch)/launch/subsystems/lidars.launch" />
+    <node pkg="selfie_stm32_bridge" type="selfie_stm32_bridge" name="stm32"/>
+</launch>

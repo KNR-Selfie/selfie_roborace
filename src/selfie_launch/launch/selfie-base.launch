@@ -1,0 +1,24 @@
+<launch>
+  <arg name="map_file" />
+  <arg name="path_file" />
+
+  <include file="$(find selfie_launch)/launch/subsystems/hardware.launch" />
+  <include file="$(find selfie_launch)/launch/subsystems/transforms.launch" />
+
+  <node pkg="selfie_odometry" type="selfie_odometry" name="selfie_odometry" />
+
+  <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" />
+  <node pkg="topic_tools" type="relay" name="laser_relay_left" args="left_laser scan"/>
+  <node pkg="topic_tools" type="relay" name="laser_relay_right" args="right_laser scan"/>
+  <node pkg="amcl" type="amcl" name="amcl" >
+    <param name="use_map_topic" type="bool" value="true" />
+  </node>
+
+  <node pkg="path_server" type="path_server" name="path_server" args="$(arg path_file)" />
+
+  <node pkg="path_extractor" type="path_extractor.py" name="path_extractor">
+    <param name="path_points_backwards" type="int" value="0"/>
+    <param name="path_points_forwards" type="int" value="6" />
+    <param name="path_direction" type="bool" value="false" />
+  </node>
+</launch>

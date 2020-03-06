@@ -1,0 +1,14 @@
+<launch>
+  <arg name="map_file" />
+  <arg name="path_file" />
+
+  <node pkg="selfie_steering_sim" type="main.py" name="selfie_steering_sim">
+    <param name="odom_frame" value="map" />
+    <param name="max_steering_angle_velocity" value="15.0" />
+  </node>
+
+  <include file="$(find selfie_launch)/launch/race-base.launch">
+    <arg name="map_file" value="$(arg map_file)" />
+    <arg name="path_file" value="$(arg path_file)" />
+  </include>
+</launch>

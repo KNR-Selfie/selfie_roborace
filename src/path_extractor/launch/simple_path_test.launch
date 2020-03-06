@@ -1,0 +1,10 @@
+<launch>
+
+  <param name="~path_points_backwards" type="int" value="2"/>
+  <param name="~path_points_forwards" type="int" value="5" />
+  <param name="~path_direction" type="bool" value="false" />
+
+  <node pkg="path_extractor" name="test_position_publisher" type="test_position_publisher.py" />
+  <node pkg="path_extractor" name="path_extractor" type="path_extractor.py" args="$(find path_extractor)/scripts/path_data.pkl"/>
+
+</launch>

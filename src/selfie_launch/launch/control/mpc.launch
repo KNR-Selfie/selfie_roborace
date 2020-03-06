@@ -1,0 +1,20 @@
+<launch>
+  <node pkg="mpc" type="mpc" name="mpc" output="screen">
+    <param name="prediction_horizon" type="int" value="10" />
+    <param name="delta_time" type="double" value="0.12" />
+    <param name="loop_rate" type="int" value="10" />
+    <param name="max_mod_delta" type="double" value="0.44" />
+    <param name="ref_v" type="double" value="2.6" />
+    <param name="cte_weight" type="int" value="85" />
+    <param name="epsi_weight" type="int" value="40" />
+    <param name="v_weight" type="int" value="150" />
+    <param name="delta_weight" type="int" value="0" />
+    <param name="diff_delta_weight" type="int" value="100" />
+    <param name="diff_v_weight" type="int" value="10" />
+    <param name="max_v" type="double" value="3" />
+    <param name="min_v" type="double" value="-0.2" />
+    <param name="cornering_safety_weight" type="double" value="40" />
+  </node>
+
+  <node pkg="selfie_control" type="cmd_converter.py" name="cmd_converter" />
+</launch>
