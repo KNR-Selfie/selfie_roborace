@@ -16,7 +16,7 @@
 
   <node pkg="path_extractor" type="path_extractor.py" name="path_extractor">
     <param name="path_points_backwards" type="int" value="0"/>
-    <param name="path_points_forwards" type="int" value="6" />
+    <param name="path_points_forwards" type="int" value="4" />
     <param name="path_direction" type="bool" value="false" />
   </node>
 </launch>

@@ -1,0 +1,41 @@
+<launch>
+
+	<!--node pkg="ackermann_vehicle_gazebo" name="map_to_baselink_pub" type="map_to_baselink_pub.py" output="screen"/-->
+
+	<!--node pkg="ackermann_vehicle_gazebo" name="speed_from_gazebo_pub" type="speed_from_gazebo_pub.py" output="screen"/-->
+
+	<!--node pkg="skidpad_planner" type="skidpad_planner" name="skidpad_planner">
+			<param name="~skipad/R" type="double" value="5.0"/>
+			<param name="~skipad/a" type="double" value="5.0"/>
+			<param name="~skipad/b" type="double" value="5.0"/>
+			<param name="~path/start" type="double" value="-1.0"/>
+			<param name="~path/stop" type="double" value="5.0"/>
+			<param name="~path/step" type="double" value="0.25"/>
+	</node -->
+
+	<node pkg="mpc" type="mpc" name="mpc" output="screen">
+			<param name="loop_rate" type="int" value="20" />
+			<param name="prediction_horizon" type="int" value="6" />
+			<param name="dt" type="double" value="0.2" />
+			<param name="max_steering_angle" type="double" value="0.44" />
+			<param name="w_cte" type="double" value="20.0" />
+			<param name="w_eps" type="double" value="20.0" />
+			<param name="w_v" type="double" value="5.0" />
+			<param name="w_delta" type="double" value="1.0" />
+			<param name="w_delta_var" type="double" value="1.0" />
+			<param name="w_a_var" type="double" value="1.0" />
+			<param name="w_a" type="double" value="1.0" />
+			<param name="v_max" type="double" value="5.0" />
+			<param name="v_min" type="double" value="-0.2" />
+			<param name="v_ref" type="double" value="5" />
+			<param name="a_max" type="double" value="2.0" />
+            <param name="an_max" type="double" value="0.5" />
+			<param name="lf" type="double" value="0.2" />
+			<param name="lr" type="double" value="0.2" />
+			<param name="ipopt_cpu_time" type="double" value="0.15"/>
+			<param name="spline_visualization_delta" value="0.1"/>
+		    	<param name="spline_visualization_points" value="40"/>
+            <!--remap from="closest_path_points" to="path" /-->
+		</node>
+
+</launch>

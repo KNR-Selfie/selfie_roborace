@@ -1,85 +1,88 @@
 #ifndef MPC_H
 #define MPC_H
-#define HAVE_STDDEF_H
-#include <cppad/cppad.hpp>
-#include <cppad/ipopt/solve.hpp>
-#undef HAVE_STDDEF_H
-#include <iostream>
-#include <string>
-#include <vector>
-#include "Eigen-3.3.7/Eigen/Core"
-#include <vector>
-#include <algorithm>
 #include <cmath>
-#include <ros/ros.h>
-#include <nav_msgs/Path.h>
-#include <std_msgs/Float32.h>
-#define STATE_VARS 5
-#define ACTUATORS_VARS 2
-// length from rear axis to COG
-#define LF 0.19
-// total length
-#define LT 0.34
 
-using CppAD::AD;
-using Eigen::VectorXd;
+struct Params{
+	double dt;
+	double lr;
+	double lf;
+	double v_ref;
+	double a_max;
+    double an_max;
 
-//Struct that is used to initialize the MPC
-struct Params
-{
-  int prediction_horizon;
-  int cte_weight;
-  int epsi_weight;
-  int v_weight;
-  int delta_weight;
-  int a_weight;
-  int diff_delta_weight;
-  int diff_v_weight;
-  double delta_time;
-  double max_mod_delta;
-  //double max_acceleration;
-  //double max_decceleration;
-  double ref_v;
-  double max_v;
-  double min_v;
-  double cornering_safety_weight;
+	std::vector<double> pts_x, pts_y;
+	bool newPoints;
+
+	double w_a;
+	double w_cte;
+	double w_eps;
+	double w_v;
+	double w_delta_var;
+	double w_delta;
+	double w_a_var;
+	double sigmoid_k;
+	double ipopt_cpu_time;
+	size_t state_vars;
+	size_t steering_vars;
+	int prediction_horizon;
+	int spline_visualization_points;
+	double spline_visualization_delta;
+	size_t constraint_functions;
+	// order of state variables
+	size_t x = 0, y = 1, psi = 2, v = 3;
+	// order of steering variables
+	size_t delta = 0, a = 1;
 };
 
-// Struct that is returned by MPC
-struct Controls
-{
-  double velocity;
+struct Controls{
   double delta;
+  double velocity;
+  double acceleration;
   nav_msgs::Path predicted_path;
   nav_msgs::Path polynomial_path;
+
+  double get_total_acceleration2(double lr, double lf){
+      double at2 = acceleration*acceleration;
+      double beta = atan(lr/(lr + lf) * tan(delta));
+      double an = velocity*velocity * sin(beta)/lr;
+      double an2 = an*an;
+      return at2 + an2;
+  }
+
+  double get_normal_acceleration_linear(double lr, double lf){
+      double beta = (lr/(lr + lf)) * delta;
+	  return velocity*velocity * beta/lr;
+  }
+
+  double get_normal_acceleration_non_linear(double lr, double lf){
+	  double beta = atan(lr/(lr + lf) * tan(delta));
+      return velocity*velocity * sin(beta)/lr;
+  }
+
+  double get_tangential_acceleration(){
+      return acceleration;
+  }
+
+
+
 };
+
 
 //Interface for interactions with ros
-class MPC
-{
+class MPC{
 
 public:
-  // Constructor
-  MPC(Params p);
+
+  MPC(){
+
+  }
   // Main method of the MPC
-  Controls getControls(Eigen::VectorXd pathCoeffs, const VectorXd &state);
+  Controls mpc_solve(std::vector<double> state0, std::vector<double> state_lower,
+  				 std::vector<double> state_upper, std::vector<double> steering_lower,
+           std::vector<double> steering_upper, Params p, double last_acceleration,
+	       double last_delta);
 
 };
 
-// Class that calculates the cost function f and contraints g_i
-class FG_eval
-{
-
-public:
-    //Coefficients of a polynomial fitted to closest path waypoints in the frame of the car
-    Eigen::VectorXd pathCoeffs;
-    FG_eval(Eigen::VectorXd pathCoeffs);
-
-    typedef CPPAD_TESTVECTOR(CppAD::AD<double>) ADvector;
-    void operator()(ADvector& fg, const ADvector& vars);
-};
-
-//Function that optimizes the cost function
-std::vector<double> Solve(const VectorXd &state, const VectorXd &coeffs);
 
 #endif //MPC_H
